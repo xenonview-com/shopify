@@ -23,24 +23,51 @@ Before you begin, you'll need the following:
 
 If you used the CLI to create the template, you can skip this section.
 
-Using yarn:
+Using npm:
 
 ```shell
-yarn install
+npm install
+```
+
+If you updated the version of the app from Git, you need to deploy that update
+
+```shell
+npm run deploy
 ```
 
 ### Local Development
 
-Using yarn:
-
 ```shell
-yarn dev
+npm run dev
 ```
-
 
 Press P to open the URL to your app. Once you click install, you can start development.
 
 Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/tools/cli). It logs into your partners account, connects to an app, provides environment variables, updates remote config, creates a tunnel and provides commands to generate extensions.
+
+### Configure the xenon-capture extension
+
+In order for the extension to access the store, you need to run a GraphQl command to activate it.
+Go to http://localhost:3457/graphiql and run the following:
+
+```
+mutation {
+  # This mutation creates a web pixel, and sets the `accountID` declared in `shopify.extension.toml` to the value `123`.
+  webPixelCreate(webPixel: { settings: "{\"accountID\":\"123\"}" }) {
+    userErrors {
+      code
+      field
+      message
+    }
+    webPixel {
+      settings
+      id
+    }
+  }
+}
+```
+
+You will then see each event logged to the browser console on your development store.
 
 ### Authenticating and querying data
 

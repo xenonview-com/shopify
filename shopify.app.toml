@@ -1,3 +1,29 @@
-# This file stores configurations for your Shopify app.
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-scopes = "write_products"
+client_id = "578dc877e3256909c7e2daaf2cc82eb7"
+name = "xenon-view"
+handle = "xenon-view-1"
+application_url = "https://diagnosis-doom-arab-specialists.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "xenon-teon.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_customer_events,write_pixels"
+
+[auth]
+redirect_urls = [
+  "https://diagnosis-doom-arab-specialists.trycloudflare.com/auth/callback",
+  "https://diagnosis-doom-arab-specialists.trycloudflare.com/auth/shopify/callback",
+  "https://diagnosis-doom-arab-specialists.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-04"
+
+[pos]
+embedded = false
