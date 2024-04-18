@@ -21,6 +21,17 @@ Before you begin, you'll need the following:
 
 ### Setup
 
+Add the following to the theme.liquid file, right near the end of the </head> section
+```
+    <!-- begin Xenon capture -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        Shopify.analytics.publish('xenon', {timing: JSON.stringify(window.performance.timing)});
+      }, false);
+    </script>
+    <!-- end Xenon capture -->
+```
+
 If you used the CLI to create the template, you can skip this section.
 
 Using npm:
@@ -52,8 +63,8 @@ Go to http://localhost:3457/graphiql and run the following:
 
 ```
 mutation {
-  # This mutation creates a web pixel, and sets the `accountID` declared in `shopify.extension.toml` to the value `123`.
-  webPixelCreate(webPixel: { settings: "{\"accountID\":\"123\"}" }) {
+  # Creates a web pixel, and sets the Xenon `apiKey` for this shop
+  webPixelCreate(webPixel: { settings: "{\"apiKey\":\"YOUR_API_KEY_HERE\"}" }) {
     userErrors {
       code
       field

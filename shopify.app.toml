@@ -3,7 +3,7 @@
 client_id = "578dc877e3256909c7e2daaf2cc82eb7"
 name = "xenon-view"
 handle = "xenon-view-1"
-application_url = "https://diagnosis-doom-arab-specialists.trycloudflare.com"
+application_url = "https://survivors-dealers-highland-suit.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_customer_events,write_pixels"
 
 [auth]
 redirect_urls = [
-  "https://diagnosis-doom-arab-specialists.trycloudflare.com/auth/callback",
-  "https://diagnosis-doom-arab-specialists.trycloudflare.com/auth/shopify/callback",
-  "https://diagnosis-doom-arab-specialists.trycloudflare.com/api/auth/callback"
+  "https://survivors-dealers-highland-suit.trycloudflare.com/auth/callback",
+  "https://survivors-dealers-highland-suit.trycloudflare.com/auth/shopify/callback",
+  "https://survivors-dealers-highland-suit.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

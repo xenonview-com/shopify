@@ -6,10 +6,7 @@ runtime_context = "strict"
 [settings]
 type = "object"
 
-[settings.fields.accountID]
-name = "Account ID"
-description = "Account ID"
+[settings.fields.apiKey]
+name = "API Key"
+description = "XenonView API Key"
 type = "single_line_text_field"
-validations =  [
-  { name = "min", value = "1" }
-]
