@@ -3,11 +3,10 @@
 client_id = "578dc877e3256909c7e2daaf2cc82eb7"
 name = "xenon-view"
 handle = "xenon-view-1"
-application_url = "https://survivors-dealers-highland-suit.trycloudflare.com"
+application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
 
 [build]
-automatically_update_urls_on_dev = true
 dev_store_url = "xenon-teon.myshopify.com"
 include_config_on_deploy = true
 
@@ -16,11 +15,7 @@ include_config_on_deploy = true
 scopes = "read_customer_events,write_pixels"
 
 [auth]
-redirect_urls = [
-  "https://survivors-dealers-highland-suit.trycloudflare.com/auth/callback",
-  "https://survivors-dealers-highland-suit.trycloudflare.com/auth/shopify/callback",
-  "https://survivors-dealers-highland-suit.trycloudflare.com/api/auth/callback"
-]
+redirect_urls = [ "https://shopify.dev/apps/default-app-home/api/auth" ]
 
 [webhooks]
 api_version = "2024-04"

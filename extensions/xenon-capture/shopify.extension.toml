@@ -10,3 +10,8 @@ type = "object"
 name = "API Key"
 description = "XenonView API Key"
 type = "single_line_text_field"
+
+[settings.fields.debug]
+name = "Debug"
+description = "XenonView Debug Logging"
+type = "single_line_text_field"
