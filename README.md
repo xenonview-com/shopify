@@ -15,9 +15,12 @@ Add the following to the theme.liquid file, right near the end of the </head> se
 ```
     <!-- begin Xenon capture -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        Shopify.analytics.publish('xenon', {timing: JSON.stringify(window.performance.timing)});
-      }, false);
+      const pageLoadTime = () => {
+        const duration = performance.getEntriesByType('navigation')[0].duration;
+        if (!duration) setTimeout(pageLoadTime, 0);
+        else Shopify.analytics.publish('xenon', {loadTime: duration/1000, href: window.location.href});
+      }
+      document.addEventListener('DOMContentLoaded', pageLoadTime);
     </script>
     <!-- end Xenon capture -->
 ```
