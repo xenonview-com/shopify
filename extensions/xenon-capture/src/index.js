@@ -1,6 +1,10 @@
 import {register} from '@shopify/web-pixels-extension';
 import Xenon from 'xenon-view-sdk';
 
+const logError = (message) => {
+  console.log('xenon-capture:%c Error: '+ message, 'color: #ff0000');
+}
+
 /**
  * Called on every page load
  */
@@ -10,9 +14,11 @@ register((api) => {
 
   // Make sure we have an API Key
   if (api.settings.apiKey) {
-    Xenon.init(api.settings.apiKey);
+    Xenon.init(api.settings.apiKey, null, (err) => {
+      logError(err.message)
+    });
   } else {
-    console.error('xenon-capture: No API Key configured');
+    logError('No API Key configured');
   }
   if (debug) {
     console.log('xenon-capture settings:', api.settings);
