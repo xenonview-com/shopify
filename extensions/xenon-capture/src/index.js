@@ -68,19 +68,18 @@ register((api) => {
         event.data.checkout.transactions.map((transaction) => {
           Xenon.milestone('Selection', 'Payment', 'Used',transaction.gateway)
           if (debug) {
-            console.log('Xenon.milestone selectionPaymentUsed', transaction.gateway);
+            console.log('Xenon.milestone selection Payment Used', transaction.gateway);
           }
         });
-        Xenon.heartbeat().then();
-
+        Xenon.heartbeat();
         // Purchase details
         const skus = event.data.checkout.lineItems.map(item => item.id);
         const total = event.data.checkout.totalPrice.amount;
         Xenon.purchase(skus, total);
-        Xenon.heartbeat().then();
         if (debug) {
           console.log('Xenon.purchase', skus, total);
         }
+        Xenon.heartbeat();
         break;
       case 'clicked':
         // Set variable for pay now button pushed
@@ -91,12 +90,27 @@ register((api) => {
           }
         }
         break;
-      case 'xenon':
-        Xenon.pageLoadTime(event.customData.loadTime.toString(), event.customData.href);
+      case 'input_changed':
+        // Capture shipping method, discount coupon, or any other form data
+        Xenon.milestone('Selection', event.data.element.id, event.data.element.type, event.data.element.value)
+        if (debug) {
+          console.log('Xenon.milestone selection', event.data.element.id, event.data.element.type, event.data.element.value);
+        }
         Xenon.heartbeat();
+        break;
+      case 'xenon_link':
+        Xenon.milestone('Link', event.customData.id, event.customData.href, event.customData.text);
+        if (debug) {
+          console.log('Xenon.milestone link:', event.customData);
+        }
+        Xenon.heartbeat();
+        break;
+      case 'xenon_timing':
+        Xenon.pageLoadTime(event.customData.loadTime.toString(), event.customData.href);
         if (debug) {
           console.log('Xenon.pageLoadTime:', event.customData);
         }
+        Xenon.heartbeat();
         break;
       default:
         //optional log message

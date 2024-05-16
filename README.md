@@ -15,10 +15,20 @@ Add the following to the theme.liquid file, right near the end of the </head> se
 ```
     <!-- begin Xenon capture -->
     <script>
+      const linkEvent = (e) => {
+        const text = e.target.innerText.trim();
+        const link = e.target.closest('a');
+        const id = link.getAttribute('id');
+        const cl = link.getAttribute('class');
+        Shopify.analytics.publish('xenon_link', {id: id ? id : cl ? cl.split(' ')[0] : null, text: text, href: link.getAttribute('href')});
+      }
       const pageLoadTime = () => {
         const duration = performance.getEntriesByType('navigation')[0].duration;
         if (!duration) setTimeout(pageLoadTime, 0);
-        else Shopify.analytics.publish('xenon', {loadTime: duration/1000, href: window.location.href});
+        else {
+          Shopify.analytics.publish('xenon_timing', {loadTime: duration/1000, href: window.location.href});
+          document.querySelectorAll('a').forEach((l) => l.addEventListener('click', linkEvent));
+        }
       }
       document.addEventListener('DOMContentLoaded', pageLoadTime);
     </script>
