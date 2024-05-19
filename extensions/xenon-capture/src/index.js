@@ -5,12 +5,16 @@ const logError = (message) => {
   console.log('xenon-capture:%c Error: '+ message, 'color: #ff0000');
 }
 
+
 /**
  * Called on every page load
  */
 register((api) => {
   // See if debug is set
   const debug = api.settings.debug && (api.settings.debug === "1" || api.settings.debug.toLowerCase() === "true");
+  const logDebug = (name, ...args) => {
+    if (debug) console.log('%c'+ name, 'color: #3333cc', ...args);
+  }
 
   // Make sure we have an API Key
   if (api.settings.apiKey) {
@@ -20,16 +24,10 @@ register((api) => {
   } else {
     logError('No API Key configured');
   }
-  if (debug) {
-    console.log('xenon-capture settings:', api.settings);
-  }
+  logDebug('Xenon app settings', api.settings);
 
   // Subscribe to all events (standard, dom, custom)
   api.analytics.subscribe('all_events', (event) => {
-    if (debug) {
-      console.log('xenon-capture event:', event);
-      //console.log('xenon-capture init:', api.init);
-    }
     switch(event.name) {
       case 'checkout_contact_info_submitted':
         const person = {
@@ -39,81 +37,74 @@ register((api) => {
         Xenon.deanonymize(person).then(() => {
           Xenon.heartbeat().then();
         });
-        if (debug) {
-          console.log('Xenon.deanonymize', person);
-        }
+        logDebug('Xenon.deanonymize', person);
         break;
       case 'checkout_shipping_info_submitted':
         Xenon.contentCreated('shipping');
         Xenon.heartbeat().then();
-        if (debug) {
-          console.log('Xenon.contentCreated shipping');
-        }
+        logDebug('Xenon.contentCreated shipping');
         break;
       case 'payment_info_submitted':
         Xenon.contentCreated('billing');
         Xenon.heartbeat().then();
-        if (debug) {
-          console.log('Xenon.contentCreated billing');
-        }
+        logDebug('Xenon.contentCreated billing');
         break;
       case 'checkout_completed':
         // Payment flow (basic or express)
         Xenon.milestone('Selection','Payment', 'Flow', paymentFlow);
         Xenon.heartbeat().then();
-        if (debug) {
-          console.log('Xenon.milestone selectionPaymentFlow', paymentFlow);
-        }
+        logDebug('Xenon.milestone', 'Selection','Payment', 'Flow', paymentFlow);
         // Payment method (there can be multiple transactions)
         event.data.checkout.transactions.map((transaction) => {
-          Xenon.milestone('Selection', 'Payment', 'Used',transaction.gateway)
-          if (debug) {
-            console.log('Xenon.milestone selection Payment Used', transaction.gateway);
-          }
+          Xenon.milestone('Selection', 'Payment', 'Used', transaction.gateway)
+          logDebug('Xenon.milestone', 'Selection','Payment', 'Used', transaction.gateway);
         });
         Xenon.heartbeat();
         // Purchase details
         const skus = event.data.checkout.lineItems.map(item => item.id);
         const total = event.data.checkout.totalPrice.amount;
         Xenon.purchase(skus, total);
-        if (debug) {
-          console.log('Xenon.purchase', skus, total);
-        }
+        logDebug('Xenon.purchase', skus, total);
         Xenon.heartbeat();
         break;
       case 'clicked':
-        // Set variable for pay now button pushed
-        if (event.data.element.id === 'summary_pay_button') {
-          api.browser.sessionStorage.setItem('xenon-paymentFlow', 'payment_basic');
-          if (debug) {
-            console.log('xenon-capture paymentFlow = payment_basic');
-          }
+        if (event.data.element.tagName !== 'INPUT') {
+          const cl = event.data.element.tagName.charAt(0) + event.data.element.tagName.slice(1).toLowerCase();
+          Xenon.milestone(cl, event.data.element.id, event.data.element.type, event.data.element.value);
+          logDebug('Xenon.milestone', cl, event.data.element.id, event.data.element.type, event.data.element.value);
+          Xenon.heartbeat();
         }
         break;
       case 'input_changed':
         // Capture shipping method, discount coupon, or any other form data
-        Xenon.milestone('Selection', event.data.element.id, event.data.element.type, event.data.element.value)
-        if (debug) {
-          console.log('Xenon.milestone selection', event.data.element.id, event.data.element.type, event.data.element.value);
-        }
+        Xenon.milestone('Input', event.data.element.id, event.data.element.type, event.data.element.value)
+        logDebug('Xenon.milestone', 'Input', event.data.element.id, event.data.element.type, event.data.element.value);
         Xenon.heartbeat();
         break;
       case 'xenon_link':
         Xenon.milestone('Link', event.customData.id, event.customData.href, event.customData.text);
-        if (debug) {
-          console.log('Xenon.milestone link:', event.customData);
-        }
+        logDebug('Xenon.milestone', 'Link', event.customData.id, event.customData.href, event.customData.text);
+        Xenon.heartbeat();
+        break;
+      case 'xenon_input':
+        const xi = 'Input' + event.customData.type.charAt(0).toUpperCase() + event.customData.type.slice(1);
+        Xenon.milestone(xi, event.customData.id, event.customData.class, event.customData.text);
+        logDebug('Xenon.milestone', xi, event.customData.id, event.customData.class, event.customData.text);
+        Xenon.heartbeat();
+        break;
+      case 'xenon_button':
+        const xb = 'Button' + event.customData.type.charAt(0).toUpperCase() + event.customData.type.slice(1);
+        Xenon.milestone(xb, event.customData.id, event.customData.class, event.customData.text);
+        logDebug('Xenon.milestone', xb, event.customData.id, event.customData.class, event.customData.text);
         Xenon.heartbeat();
         break;
       case 'xenon_timing':
         Xenon.pageLoadTime(event.customData.loadTime.toString(), event.customData.href);
-        if (debug) {
-          console.log('Xenon.pageLoadTime:', event.customData);
-        }
+        logDebug('Xenon.pageLoadTime:', event.customData);
         Xenon.heartbeat();
         break;
       default:
-        //optional log message
+        logDebug('Xenon unmapped: ', event);
     }
   });
 });
