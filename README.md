@@ -16,8 +16,8 @@ Add the following to the theme.liquid file, right near the end of the </head> se
     <!-- begin Xenon capture -->
     <script>
       const linkEvent = (e) => {
-        const t = e.target.innerText.trim();
         const a = e.target.closest('a');
+        const t = e.target.innerText ? e.target.innerText.trim() : a.innerText ? a.innerText.trim() : null;
         const id = a.hasAttribute('id') ? a.getAttribute('id') : a.hasAttribute('class') ? a.getAttribute('class').split(' ')[0] : null;
         Shopify.analytics.publish('xenon_link', {id: id ? id : cl ? cl.split(' ')[0] : null, text: t, href: a.getAttribute('href')});
       }

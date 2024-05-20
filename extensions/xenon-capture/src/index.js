@@ -104,7 +104,9 @@ register((api) => {
         Xenon.heartbeat();
         break;
       default:
-        logDebug('Xenon unmapped: ', event);
+        if (debug) {
+          console.log('%cXenon unmapped:', 'color: #dd571c', event);
+        }
     }
   });
 });
