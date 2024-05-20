@@ -35,24 +35,34 @@ register((api) => {
           name: [event.data.checkout.billingAddress.firstName, event.data.checkout.billingAddress.lastName].join(' ')
         };
         Xenon.deanonymize(person).then(() => {
-          Xenon.heartbeat().then();
+          Xenon.heartbeat();
         });
         logDebug('Xenon.deanonymize', person);
         break;
       case 'checkout_shipping_info_submitted':
         Xenon.contentCreated('shipping');
-        Xenon.heartbeat().then();
-        logDebug('Xenon.contentCreated shipping');
+        logDebug('Xenon.contentCreated','shipping');
+        Xenon.heartbeat();
         break;
       case 'payment_info_submitted':
         Xenon.contentCreated('billing');
-        Xenon.heartbeat().then();
-        logDebug('Xenon.contentCreated billing');
+        logDebug('Xenon.contentCreated','billing');
+        Xenon.heartbeat();
+        break;
+      case 'product_added_to_cart':
+        Xenon.productAddedToCart(event.data.cartLine.merchandise.product.id);
+        logDebug('Xenon.productAddedToCart', event.data.cartLine.merchandise.product.id);
+        Xenon.heartbeat();
+        break;
+      case 'product_removed_from_cart':
+        Xenon.productRemoved(event.data.cartLine.merchandise.product.id);
+        logDebug('Xenon.productRemoved', event.data.cartLine.merchandise.product.id);
+        Xenon.heartbeat();
         break;
       case 'checkout_completed':
         // Payment flow (basic or express)
         Xenon.milestone('Selection','Payment', 'Flow', paymentFlow);
-        Xenon.heartbeat().then();
+        Xenon.heartbeat();
         logDebug('Xenon.milestone', 'Selection','Payment', 'Flow', paymentFlow);
         // Payment method (there can be multiple transactions)
         event.data.checkout.transactions.map((transaction) => {
@@ -69,16 +79,19 @@ register((api) => {
         break;
       case 'clicked':
         if (event.data.element.tagName !== 'INPUT') {
-          const cl = event.data.element.tagName.charAt(0) + event.data.element.tagName.slice(1).toLowerCase();
-          Xenon.milestone(cl, event.data.element.id, event.data.element.type, event.data.element.value);
-          logDebug('Xenon.milestone', cl, event.data.element.id, event.data.element.type, event.data.element.value);
+          const cl = event.data.element.tagName.charAt(0) + event.data.element.tagName.slice(1).toLowerCase() +
+            event.data.element.type.charAt(0).toUpperCase() + event.data.element.type.slice(1);
+          Xenon.milestone(cl, event.data.element.id, event.type, event.data.element.value);
+          logDebug('Xenon.milestone', cl, event.data.element.id, event.type, event.data.element.value);
           Xenon.heartbeat();
         }
         break;
       case 'input_changed':
         // Capture shipping method, discount coupon, or any other form data
-        Xenon.milestone('Input', event.data.element.id, event.data.element.type, event.data.element.value)
-        logDebug('Xenon.milestone', 'Input', event.data.element.id, event.data.element.type, event.data.element.value);
+        const ic = event.data.element.tagName.charAt(0) + event.data.element.tagName.slice(1).toLowerCase() +
+          event.data.element.type.charAt(0).toUpperCase() + event.data.element.type.slice(1);
+        Xenon.milestone(ic, event.data.element.id, event.type, event.data.element.value)
+        logDebug('Xenon.milestone', ic, event.data.element.id, event.type, event.data.element.value);
         Xenon.heartbeat();
         break;
       case 'xenon_link':
