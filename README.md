@@ -15,6 +15,10 @@ Add the following to the theme.liquid file, right near the end of the </head> se
 ```
     <!-- begin Xenon capture -->
     <script>
+      const formInfo = (t) => {
+        const f = t.closest('form');
+        return f ? f.hasAttribute('id') ? f.getAttribute('id') : f.getAttribute('data-testid') : null;
+      }
       const linkEvent = (e) => {
         const a = e.target.closest('a');
         const t = a.innerText ? a.innerText.split('\n')[0].trim() : null;
@@ -24,7 +28,7 @@ Add the following to the theme.liquid file, right near the end of the </head> se
       }
       const inputEvent = (e) => {
         const t = e.target.labels ? Array.from(e.target.labels, (l) => l.innerText.trim()).join(' ') : null;
-        const id = e.target.hasAttribute('name') ? e.target.getAttribute('name') : e.target.getAttribute('id');
+        const id = e.target.hasAttribute('name') ? e.target.getAttribute('name') : e.target.hasAttribute('id') ? e.target.getAttribute('id') : formInfo(e.target);
         const cl = e.target.getAttribute('class');
         const type = e.target.hasAttribute('type') ? e.target.getAttribute('type') : e.target.nodeName.toLowerCase();
         Shopify.analytics.publish('xenon_input', {id: id, class: cl ? cl.split(' ')[0] : null, text: t, type});
@@ -33,7 +37,7 @@ Add the following to the theme.liquid file, right near the end of the </head> se
       const buttonEvent = (e) => {
         const b = e.target.closest('button');
         const t = b.innerText ? b.innerText.split('\n')[0].trim() : null;
-        const id = b.hasAttribute('aria-label') ? b.getAttribute('aria-label') : b.hasAttribute('name') ? b.getAttribute('name') : b.hasAttribute('id') ? b.getAttribute('id') : null;
+        const id = b.hasAttribute('aria-label') ? b.getAttribute('aria-label') : b.hasAttribute('name') ? b.getAttribute('name') : b.hasAttribute('id') ? b.getAttribute('id') : formInfo(e.target);
         const cl = b.getAttribute('class');
         Shopify.analytics.publish('xenon_button', {id: id, class: cl ? cl.split(' ')[0] : null, text: t, type: b.getAttribute('type')});
         setTimeout(() => document.querySelectorAll('button').forEach((b) => b.addEventListener('click', buttonEvent)), 1000);
@@ -41,16 +45,17 @@ Add the following to the theme.liquid file, right near the end of the </head> se
       const divEvent = (e) => {
         const b = e.target.closest('[role="button"]');
         const t = b.innerText ? b.innerText.split('\n')[0].trim() : null;
-        const id = b.hasAttribute('aria-label') ? b.getAttribute('aria-label') : b.hasAttribute('id') ? b.getAttribute('id') : b.getAttribute('data-testid');
+        const id = b.hasAttribute('aria-label') ? b.getAttribute('aria-label') : b.hasAttribute('id') ? b.getAttribute('id') : b.hasAttribute('data-testid') ? b.getAttribute('data-testid') : formInfo(e.target);
         const cl = b.getAttribute('class');
         Shopify.analytics.publish('xenon_button', {id: id, class: cl ? cl.split(' ')[0] : null, text: t, type: 'role'});
         setTimeout(() => document.querySelectorAll('[role="button"]').forEach((d) => {if (!['A','BUTTON','INPUT'].includes(d.nodeName)) d.addEventListener('click', divEvent)}), 1000);
       }
       const pageLoadTime = () => {
         const duration = performance.getEntriesByType('navigation')[0].duration;
+        const platform = navigator.platform ? navigator.platform : navigator.userAgentData ? navigator.userAgentData.platform : 'unknown';
         if (!duration) setTimeout(pageLoadTime, 0);
         else {
-          Shopify.analytics.publish('xenon_timing', {loadTime: duration/1000, href: window.location.href});
+          Shopify.analytics.publish('xenon_timing', {loadTime: duration/1000, href: window.location.href, platform});
           document.querySelectorAll('a').forEach((a) => a.addEventListener('click', linkEvent));
           document.querySelectorAll('input,textarea').forEach((i) => i.addEventListener('click', inputEvent));
           document.querySelectorAll('button').forEach((b) => b.addEventListener('click', buttonEvent));

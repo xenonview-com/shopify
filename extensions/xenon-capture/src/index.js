@@ -1,5 +1,6 @@
 import {register} from '@shopify/web-pixels-extension';
 import Xenon from 'xenon-view-sdk';
+import { version } from '../../../package.json';
 
 const logError = (message) => {
   console.log('xenon-capture:%c Error: '+ message, 'color: #ff0000');
@@ -21,14 +22,19 @@ register((api) => {
     Xenon.init(api.settings.apiKey, null, (err) => {
       logError(err.message)
     });
+    Xenon.ecomAbandonment();
   } else {
     logError('No API Key configured');
   }
-  logDebug('Xenon app settings', api.settings);
+  //logDebug('Xenon app settings', api.settings);
 
   // Subscribe to all events (standard, dom, custom)
   api.analytics.subscribe('all_events', (event) => {
     switch(event.name) {
+      case 'collection_viewed':
+        Xenon.contentViewed('Collection', event.data.collection.title);
+        logDebug('Xenon.contentViewed', 'Collection', event.data.collection.title);
+        break;
       case 'checkout_contact_info_submitted':
         const person = {
           email: event.data.checkout.email,
@@ -57,19 +63,21 @@ register((api) => {
       case 'product_removed_from_cart':
         Xenon.productRemoved(event.data.cartLine.merchandise.product.id);
         logDebug('Xenon.productRemoved', event.data.cartLine.merchandise.product.id);
+        if (api.init.data.cart.totalQuantity === 0) {
+          // cart is empty
+          Xenon.cancelAbandonment();
+          logDebug('Xenon.cancelAbandonment');
+        }
         Xenon.heartbeat();
         break;
       case 'checkout_completed':
-        // Payment flow (basic or express)
-        Xenon.milestone('Selection','Payment', 'Flow', paymentFlow);
-        Xenon.heartbeat();
-        logDebug('Xenon.milestone', 'Selection','Payment', 'Flow', paymentFlow);
-        // Payment method (there can be multiple transactions)
+        // Payment flow (basic or express) - TBD - currently summary_pay_button milestone recorded
+        /// Xenon.milestone('Selection','Payment', 'Flow', paymentFlow);
+
         event.data.checkout.transactions.map((transaction) => {
           Xenon.milestone('Selection', 'Payment', 'Used', transaction.gateway)
           logDebug('Xenon.milestone', 'Selection','Payment', 'Used', transaction.gateway);
         });
-        Xenon.heartbeat();
         // Purchase details
         const skus = event.data.checkout.lineItems.map(item => item.id);
         const total = event.data.checkout.totalPrice.amount;
@@ -85,6 +93,10 @@ register((api) => {
           logDebug('Xenon.milestone', cl, event.data.element.id, event.type, event.data.element.value);
           Xenon.heartbeat();
         }
+        break;
+      case 'input_blurred':
+      case 'input_focused':
+        // Not needed
         break;
       case 'input_changed':
         // Capture shipping method, discount coupon, or any other form data
@@ -111,14 +123,25 @@ register((api) => {
         logDebug('Xenon.milestone', xb, event.customData.id, event.customData.class, event.customData.text);
         Xenon.heartbeat();
         break;
+      case 'page_viewed':
+        // duplicates xenon_timing
+        break;
       case 'xenon_timing':
-        Xenon.pageLoadTime(event.customData.loadTime.toString(), event.customData.href);
-        logDebug('Xenon.pageLoadTime:', event.customData);
-        Xenon.heartbeat();
+        api.browser.sessionStorage.getItem('xenon-platform').then((p) => {
+          Xenon.pageLoadTime(event.customData.loadTime.toString(), event.customData.href);
+          logDebug('Xenon.pageLoadTime:', event.customData.loadTime, event.customData.href);
+          if (!p) {
+            // Configure platform
+            Xenon.platform(version, 'Pixel', event.customData.platform, api.init.context.navigator.userAgent);
+            logDebug('Xenon.platform', version, 'Pixel', event.customData.platform, api.init.context.navigator.userAgent)
+            api.browser.sessionStorage.setItem('xenon-platform', event.customData.platform);
+          }
+          Xenon.heartbeat();
+        });
         break;
       default:
         if (debug) {
-          console.log('%cXenon unmapped:', 'color: #dd571c', event);
+          console.log('%cXenon unmapped:', 'color: #ff8c00', event);
         }
     }
   });
