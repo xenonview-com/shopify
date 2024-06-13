@@ -1,7 +1,13 @@
 {
   "name": "xenon-view",
-  "version": "1.0.2",
-  "license": "UNLICENSED",
+  "version": "1.0.3",
+  "homepage": "https://github.com/xenonview-com/xenon-view",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xenonview-com/xenon-view.git",
+    "maintainer": "Luke Woydziak <luke.woydziak@gmail.com>"
+  },
+  "license": "Apache",
   "scripts": {
     "shopify": "shopify",
     "build": "shopify app build",
@@ -11,12 +17,16 @@
     "deploy": "shopify app deploy"
   },
   "dependencies": {
-    "xenon-view-sdk": "^0.1.26"
+    "xenon-view-sdk": "^0.1.29"
   },
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
   ],
-  "author": "tlucas",
+  "author": "Teon Lucas <teon.max.lucas@gmail.com>",
+  "contributors": [
+    "Luke Woydziak <luke.woydziak@gmail.com>",
+    "Teon Lucas <teon.max.lucas@gmail.com>"
+  ],
   "private": true,
   "workspaces": [
     "extensions/*"
