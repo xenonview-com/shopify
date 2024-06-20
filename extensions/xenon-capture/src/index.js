@@ -13,7 +13,7 @@ const logError = (message) => {
 register((api) => {
   // See if debug is set
   const debug = api.settings.debug && (api.settings.debug === "1" || api.settings.debug.toLowerCase() === "true");
-  const purachaseOnly = api.settings.purachaseOnly && (api.settings.purachaseOnly === "1" || api.settings.purachaseOnly.toLowerCase() === "true");
+  const purchaseOnly = api.settings.purchaseOnly && (api.settings.purchaseOnly === "1" || api.settings.purchaseOnly.toLowerCase() === "true");
   const logDebug = (name, ...args) => {
     if (debug) console.log('%c'+ name, 'color: #3333cc', ...args);
   }
@@ -33,7 +33,7 @@ register((api) => {
   api.analytics.subscribe('all_events', (event) => {
     switch(event.name) {
       case 'collection_viewed':
-        if (!purachaseOnly) {
+        if (!purchaseOnly) {
           Xenon.contentViewed('Collection', event.data.collection.title);
           logDebug('Xenon.contentViewed', 'Collection', event.data.collection.title);
         }
@@ -43,7 +43,7 @@ register((api) => {
           email: event.data.checkout.email,
           name: [event.data.checkout.billingAddress.firstName, event.data.checkout.billingAddress.lastName].join(' ')
         };
-        if (purachaseOnly) {
+        if (purchaseOnly) {
           Xenon.milestone('Checkout', 'Contact', person.name, person.email);
           logDebug('Xenon.milestone', 'Checkout','Contact', person.name, person.email);
           Xenon.heartbeat();
@@ -65,14 +65,14 @@ register((api) => {
         Xenon.heartbeat();
         break;
       case 'product_added_to_cart':
-        if (!purachaseOnly) {
+        if (!purchaseOnly) {
           Xenon.productAddedToCart(event.data.cartLine.merchandise.product.id);
           logDebug('Xenon.productAddedToCart', event.data.cartLine.merchandise.product.id);
           Xenon.heartbeat();
         }
         break;
       case 'product_removed_from_cart':
-        if (!purachaseOnly) {
+        if (!purchaseOnly) {
           Xenon.productRemoved(event.data.cartLine.merchandise.product.id);
           logDebug('Xenon.productRemoved', event.data.cartLine.merchandise.product.id);
           if (api.init.data.cart.totalQuantity === 0) {
