@@ -9,6 +9,16 @@ Before you begin, you'll need the following:
 2. **Shopify Partner Account**: [Create an account](https://partners.shopify.com/signup) if you don't have one.
 3. **Test Store**: Set up either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store) for testing your app.
 
+
+Update the `shopify.app.toml` file, configuring the follwing lines with your dev store url and client id.
+```
+client_id = "YOUR_CLIENT_ID"
+dev_store_url = "YOUR_STORE_DOMAIN.myshopify.com"
+```
+
+**Note**: If you don't make the above update, the deployment process will ask you to do a reset, making a copy of `shopify.app.toml` to update the client id.  However, the copy action messes up the scopes.
+
+
 ### Setup
 
 Add the following to the theme.liquid file, right near the end of the </head> section
@@ -81,6 +91,12 @@ If you updated the version of the app from Git, you need to deploy that update
 npm run deploy
 ```
 
+This step should generate the `.env` file containing your API credentials as follows:
+```
+SHOPIFY_API_KEY=YOUR_KEY
+SHOPIFY_API_SECRET=YOUR_SECRET
+```
+
 ### Local Development
 
 ```shell
@@ -96,17 +112,18 @@ Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/
 In order for the extension to access the store, you need to run a GraphQl command to activate it.
 This same command also configures its settings.
 
-| Setting | Value        | Description               |
-|---------|--------------|---------------------------|
-| apiKey  | YOUR_API_KEY | Used to call Xenon.Init() |
-| debug   | true / false | Enable debug logging      |
+| Setting      | Value        | Description                 |
+|--------------|--------------|-----------------------------|
+| apiKey       | YOUR_API_KEY | Used to call Xenon.Init()   |
+| debug        | true / false | Enable debug logging        |
+| purchaseOnly | true / false | Only report purchase events |
 
 Go to http://localhost:3457/graphiql and run the following:
 
 ```
 mutation {
   # Creates a web pixel, and sets the Xenon `apiKey` for this shop
-  webPixelCreate(webPixel: { settings: "{\"apiKey\":\"YOUR_API_KEY_HERE\", \"debug\":\"true\"}" }) {
+  webPixelCreate(webPixel: { settings: "{\"apiKey\":\"YOUR_API_KEY_HERE\", \"debug\":\"true\", \"purchaseOnly\":\"false\"}" }) {
     userErrors {
       code
       field

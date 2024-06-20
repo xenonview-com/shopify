@@ -1,13 +1,13 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "578dc877e3256909c7e2daaf2cc82eb7"
+client_id = "YOUR_CLIENT_ID"
 name = "xenon-view"
 handle = "xenon-view-1"
 application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
 
 [build]
-dev_store_url = "xenon-teon.myshopify.com"
+dev_store_url = "YOUR_STORE_DOMAIN.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]

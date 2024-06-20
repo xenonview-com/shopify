@@ -15,3 +15,8 @@ type = "single_line_text_field"
 name = "Debug"
 description = "XenonView Debug Logging"
 type = "single_line_text_field"
+
+[settings.fields.purchaseOnly]
+name = "Purchase Only"
+description = "XenonView report purchase events only"
+type = "single_line_text_field"
