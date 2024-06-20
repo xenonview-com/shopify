@@ -111,17 +111,18 @@ Local development is powered by [the Shopify CLI](https://shopify.dev/docs/apps/
 In order for the extension to access the store, you need to run a GraphQl command to activate it.
 This same command also configures its settings.
 
-| Setting | Value        | Description               |
-|---------|--------------|---------------------------|
-| apiKey  | YOUR_API_KEY | Used to call Xenon.Init() |
-| debug   | true / false | Enable debug logging      |
+| Setting      | Value        | Description                 |
+|--------------|--------------|-----------------------------|
+| apiKey       | YOUR_API_KEY | Used to call Xenon.Init()   |
+| debug        | true / false | Enable debug logging        |
+| purchaseOnly | true / false | Only report purchase events |
 
 Go to http://localhost:3457/graphiql and run the following:
 
 ```
 mutation {
   # Creates a web pixel, and sets the Xenon `apiKey` for this shop
-  webPixelCreate(webPixel: { settings: "{\"apiKey\":\"YOUR_API_KEY_HERE\", \"debug\":\"true\"}" }) {
+  webPixelCreate(webPixel: { settings: "{\"apiKey\":\"YOUR_API_KEY_HERE\", \"debug\":\"true\", \"purchaseOnly\":\"false\"}" }) {
     userErrors {
       code
       field
