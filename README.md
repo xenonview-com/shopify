@@ -9,13 +9,8 @@ Before you begin, you'll need the following:
 2. **Shopify Partner Account**: [Create an account](https://partners.shopify.com/signup) if you don't have one.
 3. **Test Store**: Set up either a [development store](https://help.shopify.com/en/partners/dashboard/development-stores#create-a-development-store) or a [Shopify Plus sandbox store](https://help.shopify.com/en/partners/dashboard/managing-stores/plus-sandbox-store) for testing your app.
 
-You will also need to configure a `.env` file containing your API credentials as follows:
-```
-SHOPIFY_API_KEY=YOUR_KEY
-SHOPIFY_API_SECRET=YOUR_SECRET
-```
 
-Also, update the `shopify.app.toml` file, configuring the follwing lines with your dev store url and client id.
+Update the `shopify.app.toml` file, configuring the follwing lines with your dev store url and client id.
 ```
 client_id = "YOUR_CLIENT_ID"
 dev_store_url = "YOUR_STORE_DOMAIN.myshopify.com"
@@ -94,6 +89,12 @@ If you updated the version of the app from Git, you need to deploy that update
 
 ```shell
 npm run deploy
+```
+
+This step should generate the `.env` file containing your API credentials as follows:
+```
+SHOPIFY_API_KEY=YOUR_KEY
+SHOPIFY_API_SECRET=YOUR_SECRET
 ```
 
 ### Local Development
